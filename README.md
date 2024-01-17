@@ -59,7 +59,7 @@ Data collection
 - Code must be in at least one clearly commented Jupyter Notebook.
 - A readme/executive summary in markdown.
 - You must submit your slide deck as a PDF.
-- Materials must be submitted by **9:00 AM (ET) on Monday, Jan. 22nd**.
+- Materials must be submitted by **9:00 AM (ET) on Monday, Jan. 29nd**.
 
 ---
 
