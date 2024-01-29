@@ -1,8 +1,8 @@
 # Data Science NLP Project - Classifying Philosophical Discourse
-#### An Exploration of Buddhism and Stoicism Subreddit Posts 
+**An Exploration of Buddhism and Stoicism Subreddit Posts**
 
 ## Problem Statement
-Many similarities have been drawn between the teachings of Buddhism and Stoicism. Given this, can the discourse between the two be accurately classified (with 90% or more accuracy) on unseen data? If so, does this hold, even as technical terminology, philosophers' names and writings are excluded from the model?
+Many similarities have been drawn between the teachings of Buddhism and Stoicism. Given this, can the discourse between the two be accurately classified (with 90% or more accuracy) on unseen data? If so, does this hold even as technical terminology: like philosophers' names and writings are excluded from the model?
 
 ## Introduction
 Two philosophies delicately crafted three decades and 10,000 km apart. In a time long before microchips; when the best computer humans had access to was to close their eyes and think.
@@ -36,15 +36,16 @@ The ultimate goal in Buddhism is liberation from suffering through attaining enl
     - “Memento mori is the term used by the Stoic philosophers to remind us that death is inevitable and that our ability to hold that truth in mind helps us to live better and more fully.”
     Source of quotes [Psychology Today's article](https://www.psychologytoday.com/intl/blog/buddhist-psychology-east-meets-west/202207/the-happy-overlap-between-stoicism-and-buddhism).
 
-We see some very similar foundational ideas stemming from two completely different languages and cultures. However, through centuries of interpretation and translation to arrive at the present day, to what extent has the discourse between the two philosophies converged? This is the broader - more interesting - question that the project will contribute towards. Though an complete objective answer is surely out of the scope of just one NLP binary classification project.  
+We see some very similar foundational ideas stemming from two completely different languages and cultures. However, through centuries of interpretation and translation to arrive at the present day, to what extent has the discourse between the two philosophies converged? This is the broader - more interesting - question that the project will contribute towards. Though an complete objective answer to this is out of the scope of this one NLP binary classification project.  
 
 ## Process Overview
 
 ### 1. Collecting Data
 - Data was scraped from Jan 18th to Jan 26th, 2024, using PRAW via the Reddit API.
-- Based on experience a scrape every 2 days was sufficient to ensure no new posts were missed, however more were done in attempts to scrape more data.
+- Based on experience a scrape every 2 days was sufficient to ensure no new posts were missed, however more were done in attempts to scrape more data from the past.
 - Unable to scrape more than 1000 posts into the past from Jan 18th 2024 due to Reddit API restrictions. 
 - 11 scrapes completed in total per subreddit.
+- 6336 distinct posts were scraped. 
 
 ### 2. Cleaning and Exploratory Data Analysis (EDA)
 - Removed duplicate values from dataframes.
@@ -66,33 +67,33 @@ We see some very similar foundational ideas stemming from two completely differe
 - Exported cleaned dataset 'stoicism_buddhism_clean.csv".
 
 ### 3. Modeling the Data
-1. Created initial simple logistic regression model - for coefficient interpretation and for use as baseline model. 
+- Created initial simple logistic regression model - for coefficient interpretation and for use as baseline model. 
    - Initial model showed high accuracy at 0.9 cross-validation score. 
-2. Coefficient Analysis:
+- Coefficient Analysis:
    - Suggested stemming might be useful for better generalization (and reduced computational costs).
    - Stoicism-related words among the top 50 largest coefficients.
    - Interesting top 50 coefficient words: control, quote, philosophy, man, hit, wisdom, training, virtue, fate, indifference, belief, care, practices, thankful, grumpy, artists, political and working. 
    - Many Buddhism-related words had the lowest coefficients.
    -Interesting bottom 50 coefficient words: practice, beautiful, letting, peaceful, peace, hurt, painting, statue, try, impermanent.
-3. Combination of CVEC pre-processing and TF-IDF tested; TF-IDF yielded lowest bias and variance.
-4. Explored effects of stemming and stop word inclusion.
-5. Focused on two models: Logistic Regression and Random Forests.
-6. Defined optimal production model:   
+- Combination of CVEC pre-processing and TF-IDF tested; TF-IDF yielded lowest bias and variance.
+- Explored effects of stemming and stop word inclusion.
+- Focused on two models: Logistic Regression and Random Forests.
+- Defined optimal production model:   
     - TD-IFD pre-processing with Logistic Regression and 0.918 cross validation score.
 
 ### 4. Evaluating and Restricting the Models
-1. **Production Model - Logistic Regression Model:**
+- **Production Model - Logistic Regression Model:**
    - Balanced Accuracy: 0.92; F1 score: 0.92.
    - Specificity higher than sensitivity, meaning the model is better at classifying the buddhist subreddits (the negative class) correctly (95% of the time) and slightly worse at predicting the stoicism submissions (the positive class) correctly (89% of the time)
    - Isolated 95 erroneous rows to see if any conclusions could be drawn. Nothing revealing seen in the top appearing words: like, life , people, just, suffering. 
    - ROC curve indicates high model separability (AUC: 0.98).
-2. **Restricting Words in the Model:**
+- **Restricting Words in the Model:**
    - Removed technical jargon and specific terminology. With a custom list of 261 identifying words perviously seen to be extreme (highest/lowest) coefficients in logreg model. Focused on: philosophers names, books, writings and specific terminology/phases from Stoicism and Buddhism based on domain knowledge.
    - Accuracy fell by around 10%.
    - Model still accurate at 82% with technical jargon removed. 
    - Proportional changes in recall and precision, suggests that the model relied fairly equally on technical Jargon to classify submissions between the two subreddits. 
    - Then attempted removal of 137 words related to rationality, logic, and emotions but yielded no conclusive results. Model remained fairly stable suggesting these words did not have any speficic distinguishing power for the model.
-3. **Model Comparison:**
+- **Model Comparison:**
    - Random Forest classifier showed decreased balanced accuracy compared to Logistic Regression.
    - Random Forest had more balanced recall and precision however, Random Forest was underperforming the Logistic Regression in identifying the positive class (r/stoicism). 
    - Random Forest exhibited higher variance and bias on the test dataset.
