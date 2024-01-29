@@ -1,191 +1,161 @@
-# ![](https://ga-dash.s3.amazonaws.com/production/assets/logo-9f88ae6c9c3871690e33280fcf557f33.png) Project 3: Web APIs & NLP
+# Data Science NLP Project - Classifying Philosophical Discourse
+#### An Exploration of Buddhism and Stoicism Subreddit Posts 
 
-### Description
+## Problem Statement
+Many similarities have been drawn between the teachings of Buddhism and Stoicism. Given this, can the discourse between the two be accurately classified (with 90% or more accuracy) on unseen data? If so, does this hold, even as technical terminology, philosophers' names and writings are excluded from the model?
 
-In week four we've learned about a few different classifiers. In week five we learned about webscraping, APIs, and Natural Language Processing (NLP). This project will put those skills to the test.
+## Introduction
+Two philosophies delicately crafted three decades and 10,000 km apart. In a time long before microchips; when the best computer humans had access to was to close their eyes and think.
 
-For project 3, your goal is two-fold:
-1. Using [Reddit's](https://www.reddit.com/dev/api/) API or [PRAW](https://praw.readthedocs.io/en/stable/), you'll collect posts from two subreddits of your choosing.
-2. You'll then use NLP to train a classifier on which subreddit a given post came from. This is a binary classification problem.
+One philosophy stemming from ancient Greece, the other ancient India — both standing the test of time and both coming to surprisingly similar conclusions, albeit perhaps, with different vocabulary.
 
+> “The mind is everything. What you think you become.” – Buddha  
+> “The happiness of your life depends upon the quality of your thoughts.” – Marcus Aurelius
 
-### About PRAW
+> “Pain is certain, suffering is optional.” – Buddha  
+> “The wise man accepts his pain, endures it, but does not add to it.” – Marcus Aurelius
 
-PRAW is a Python wrapper for the Reddit API.  The Reddit API has more functionality than PushShift; and therefore, is a little less straightforward.  It requires that you have created a user account on Reddit, and an app with a client ID and secret.  More information on getting started [here](https://praw.readthedocs.io/en/stable/getting_started/quick_start.html).  
+In this Natural Language Processing (NLP) project, over 3000 distinct Reddit submissions are scraped from two subreddits: r/stoicism and r/buddhism via Python Reddit API Wrapper (PRAW). A machine learning classification model is then built, designed to distinguish between the subreddits based only on the text within scraped submissions. Finally the models used are analysed and some models with restricted input features are evaluated. Through this process it is hoped that some revelations are made as to the similarities and differences in discourse between the philosophical movements. 
 
-One drawback of PRAW is that it only allows collection of up to around 1000 posts from any given subreddit stream:  
-- controversial
-- gilded
-- hot
-- new
-- rising
-- top  
+## Project Aims
+1. Build a high-performing classification model that can distinguish between the two subreddits with at least 90% accuracy on unseen data.
+2. Analyze how the removal of technical terminology—philosophers' names, books, writings, and specific technical terminology—affects model performance.
+3. Reveal other insights about the similarities or differences in discourse between the two subreddit communities.
 
-In order to gather enough data for modeling, you will likely need to use an active subreddit and pull data from multiple streams over several days.
+## Similarities
+The ultimate goal in Buddhism is liberation from suffering through attaining enlightenment (Nirvana), while for stoics its living virtuously with internal freedom independent from external events (Eudaimonia). To touch briefly on other similarites between Buddhism and Stoicism. Both philosophies: 
+- Advocate for introspection, observation, and meditation.
+- Exalt the present moment as the path to contentment and truth.
+- Emphasize the impermanence of all things.
+- Offer practical, secular philosophies for living a better life.
+- Focus on inner peace, self-control, and personal responsibility.
+- Utilise meditation as a tool for reflection and growth.
+- View the universe as interconnected and teach that the universe is one. 
+- Teach to embrace death: 
+    - “Buddhism teaches that.. death is inevitably bound up in life… not to be feared or avoided. “
+    - “Memento mori is the term used by the Stoic philosophers to remind us that death is inevitable and that our ability to hold that truth in mind helps us to live better and more fully.”
+    Source of quotes [Psychology Today's article](https://www.psychologytoday.com/intl/blog/buddhist-psychology-east-meets-west/202207/the-happy-overlap-between-stoicism-and-buddhism).
 
----
+We see some very similar foundational ideas stemming from two completely different languages and cultures. However, through centuries of interpretation and translation to arrive at the present day, to what extent has the discourse between the two philosophies converged? This is the broader - more interesting - question that the project will contribute towards. Though an complete objective answer is surely out of the scope of just one NLP binary classification project.  
 
-### Checkpoints and Advice
+## Process Overview
 
-If you aren't familiar with [reddit](https://www.reddit.com/), go check it out and browse different subreddits. Each subreddit is like a forum on a different topic. [Here's a list of subreddits by topic.](https://www.reddit.com/r/ListOfSubreddits/wiki/listofsubreddits)
+### 1. Collecting Data
+- Data was scraped from Jan 18th to Jan 26th, 2024, using PRAW via the Reddit API.
+- Based on experience a scrape every 2 days was sufficient to ensure no new posts were missed, however more were done in attempts to scrape more data.
+- Unable to scrape more than 1000 posts into the past from Jan 18th 2024 due to Reddit API restrictions. 
+- 11 scrapes completed in total per subreddit.
 
-Data Choices
-- In your project you can classify posts, comments, titles, or some combination of those things. What you choose will partly determine how difficult your data cleaning will be and how challenging the classification task will be for your algorithms. In your presentation and executive summary, **tell us what you used**.
-- You can also include other information from posts or comments as features, but you must include some text.
+### 2. Cleaning and Exploratory Data Analysis (EDA)
+- Removed duplicate values from dataframes.
+- Combined dataframes into one.
+- Noted a high proportion of posts with no self-text; merged self-text and title columns.
+- Created the numerical target variable.
+- Removed punctuation from text.
+- Created a word count column per post to find average word count: Buddhism posts - 100 words; Stoicism posts - 143 words.
+- Total word count: Buddhism - 327,513; Stoicism - 436,787.
+- Plotted word count histograms by subreddit.
+- Created 'top_words_subreddit' function (see functions.py file).
+- Initial list of frequent words suggests removing stop words may help if overfitting occurs.
+- Frequent shared words indicate potential use of TF-IDF in preprocessing may be benefical to increase weight on less common more distinct words.
+- Checked top-appearing brigrams - many of which were pronouns prepositions and conjunctions (typical stop words).
+- Checked top-appearing trigrams, revealing significant URL presence.
+- Approximately 6% of submissions contained URLs; removed these from the corpus.
+- Approximately 3% of documents contained emojis; removed emojis.
+- Identified a baseline score of 51% for non-stoicism posts.
+- Exported cleaned dataset 'stoicism_buddhism_clean.csv".
 
-Subreddit Selection
-- The more similar the subreddits are, the more challenging (and interesting?!) your project will become.
-- Choose your subreddits as soon as you can and let us know your choices.  Consider the breakdown of the post count for each as well.
-- The more active the subreddit, the more data you will likely be able to collect.
+### 3. Modeling the Data
+1. Created initial simple logistic regression model - for coefficient interpretation and for use as baseline model. 
+   - Initial model showed high accuracy at 0.9 cross-validation score. 
+2. Coefficient Analysis:
+   - Suggested stemming might be useful for better generalization (and reduced computational costs).
+   - Stoicism-related words among the top 50 largest coefficients.
+   - Interesting top 50 coefficient words: control, quote, philosophy, man, hit, wisdom, training, virtue, fate, indifference, belief, care, practices, thankful, grumpy, artists, political and working. 
+   - Many Buddhism-related words had the lowest coefficients.
+   -Interesting bottom 50 coefficient words: practice, beautiful, letting, peaceful, peace, hurt, painting, statue, try, impermanent.
+3. Combination of CVEC pre-processing and TF-IDF tested; TF-IDF yielded lowest bias and variance.
+4. Explored effects of stemming and stop word inclusion.
+5. Focused on two models: Logistic Regression and Random Forests.
+6. Defined optimal production model:   
+    - TD-IFD pre-processing with Logistic Regression and 0.918 cross validation score.
 
-Data collection
-- Because the API only allows us to retrieve about 1000 of the most recent new and popular posts at time, you may want to write a script so that you can execute it from the command line at regular intervals.
-- The more data you can pull the better for your classifier. **Ideally you will want data from at least 3000 unique, non-null posts from each subreddit.**
-
-### Requirements
-
-- Gather and prepare your data using the `requests` library and Reddit API, or PRAW.
-- **Create and compare two models**. Any two classifiers at least of your choosing: random forest, logistic regression, KNN, etc.
-- A Jupyter Notebook with your analysis for a peer audience of data scientists.
-- An executive summary of your results.
-- A short presentation (8 minutes maximum) outlining your process and findings for a semi-technical audience.
-
-**Pro Tip:** You can find a good example executive summary [here](https://www.proposify.biz/blog/executive-summary).
-
----
-
-### Necessary Deliverables / Submission
-
-- Code must be in at least one clearly commented Jupyter Notebook.
-- A readme/executive summary in markdown.
-- You must submit your slide deck as a PDF.
-- Materials must be submitted by **9:00 AM (ET) on Monday, Jan. 29nd**.
-
----
-
-## Rubric
-Your instructors will evaluate your project (for the most part) using the following criteria.  You should make sure that you consider and/or follow most if not all of the considerations/recommendations outlined below **while** working through your project.
-
-For Project 3 the evaluation categories are as follows:<br>
-**The Data Science Process**
-- Problem Statement
-- Data Collection
-- Data Cleaning & EDA
-- Preprocessing & Modeling
-- Evaluation and Conceptual Understanding
-- Conclusion and Recommendations
-
-**Organization and Professionalism**
-- Organization
-- Visualizations
-- Python Syntax and Control Flow
-- Presentation
-
-**Scores will be out of 30 points based on the 10 categories in the rubric.** <br>
-*3 points per section*<br>
-
-| Score | Interpretation |
-| --- | --- |
-| **0** | *Project fails to meet the minimum requirements for this item.* |
-| **1** | *Project meets the minimum requirements for this item, but falls significantly short of portfolio-ready expectations.* |
-| **2** | *Project exceeds the minimum requirements for this item, but falls short of portfolio-ready expectations.* |
-| **3** | *Project meets or exceeds portfolio-ready expectations; demonstrates a thorough understanding of every outlined consideration.* |
-
-
-### The Data Science Process
-
-**Problem Statement**
-- Is it clear what the goal of the project is?
-- What type of model will be developed?
-- How will success be evaluated?
-- Is the scope of the project appropriate?
-- Is it clear who cares about this or why this is important to investigate?
-- Does the student consider the audience and the primary and secondary stakeholders?
-
-**Data Collection**
-- Was enough data gathered to generate a significant result?
-- Was data collected that was useful and relevant to the project?
-- Was data collection and storage optimized through custom functions, pipelines, and/or automation?
-- Was thought given to the server receiving the requests such as considering number of requests per second?
-
-**Data Cleaning and EDA**
-- Are missing values imputed/handled appropriately?
-- Are distributions examined and described?
-- Are outliers identified and addressed?
-- Are appropriate summary statistics provided?
-- Are steps taken during data cleaning and EDA framed appropriately?
-- Does the student address whether or not they are likely to be able to answer their problem statement with the provided data given what they've discovered during EDA?
-
-**Preprocessing and Modeling**
-- Is text data successfully converted to a matrix representation?
-- Are methods such as stop words, stemming, and lemmatization explored?
-- Does the student properly split and/or sample the data for validation/training purposes?
-- Does the student test and evaluate a variety of models to identify a production algorithm (**AT MINIMUM:** two models)?
-- Does the student defend their choice of production model relevant to the data at hand and the problem?
-- Does the student explain how the model works and evaluate its performance successes/downfalls?
-
-**Evaluation and Conceptual Understanding**
-- Does the student accurately identify and explain the baseline score?
-- Does the student select and use metrics relevant to the problem objective?
-- Does the student interpret the results of their model for purposes of inference?
-- Is domain knowledge demonstrated when interpreting results?
-- Does the student provide appropriate interpretation with regards to descriptive and inferential statistics?
-
-**Conclusion and Recommendations**
-- Does the student provide appropriate context to connect individual steps back to the overall project?
-- Is it clear how the final recommendations were reached?
-- Are the conclusions/recommendations clearly stated?
-- Does the conclusion answer the original problem statement?
-- Does the student address how findings of this research can be applied for the benefit of stakeholders?
-- Are future steps to move the project forward identified?
+### 4. Evaluating and Restricting the Models
+1. **Production Model - Logistic Regression Model:**
+   - Balanced Accuracy: 0.92; F1 score: 0.92.
+   - Specificity higher than sensitivity, meaning the model is better at classifying the buddhist subreddits (the negative class) correctly (95% of the time) and slightly worse at predicting the stoicism submissions (the positive class) correctly (89% of the time)
+   - Isolated 95 erroneous rows to see if any conclusions could be drawn. Nothing revealing seen in the top appearing words: like, life , people, just, suffering. 
+   - ROC curve indicates high model separability (AUC: 0.98).
+2. **Restricting Words in the Model:**
+   - Removed technical jargon and specific terminology. With a custom list of 261 identifying words perviously seen to be extreme (highest/lowest) coefficients in logreg model. Focused on: philosophers names, books, writings and specific terminology/phases from Stoicism and Buddhism based on domain knowledge.
+   - Accuracy fell by around 10%.
+   - Model still accurate at 82% with technical jargon removed. 
+   - Proportional changes in recall and precision, suggests that the model relied fairly equally on technical Jargon to classify submissions between the two subreddits. 
+   - Then attempted removal of 137 words related to rationality, logic, and emotions but yielded no conclusive results. Model remained fairly stable suggesting these words did not have any speficic distinguishing power for the model.
+3. **Model Comparison:**
+   - Random Forest classifier showed decreased balanced accuracy compared to Logistic Regression.
+   - Random Forest had more balanced recall and precision however, Random Forest was underperforming the Logistic Regression in identifying the positive class (r/stoicism). 
+   - Random Forest exhibited higher variance and bias on the test dataset.
+   - Random Forest showed a lower F1 score compared to logistic regression.
 
 
-### Organization and Professionalism
-
-**Project Organization**
-- Are modules imported correctly (using appropriate aliases)?
-- Are data imported/saved using relative paths?
-- Does the README provide a good executive summary of the project?
-- Is markdown formatting used appropriately to structure notebooks?
-- Are there an appropriate amount of comments to support the code?
-- Are files & directories organized correctly?
-- Are there unnecessary files included?
-- Do files and directories have well-structured, appropriate, consistent names?
-
-**Visualizations**
-- Are sufficient visualizations provided?
-- Do plots accurately demonstrate valid relationships?
-- Are plots labeled properly?
-- Are plots interpreted appropriately?
-- Are plots formatted and scaled appropriately for inclusion in a notebook-based technical report?
-
-**Python Syntax and Control Flow**
-- Is care taken to write human readable code?
-- Is the code syntactically correct (no runtime errors)?
-- Does the code generate desired results (logically correct)?
-- Does the code follows general best practices and style guidelines?
-- Are Pandas functions used appropriately?
-- Are `sklearn` and `NLTK` methods used appropriately?
-
-**Presentation**
-- Is the problem statement clearly presented?
-- Does a strong narrative run through the presentation building toward a final conclusion?
-- Are the conclusions/recommendations clearly stated?
-- Is the level of technicality appropriate for the intended audience?
-- Is the student substantially over or under time?
-- Does the student appropriately pace their presentation?
-- Does the student deliver their message with clarity and volume?
-- Are appropriate visualizations generated for the intended audience?
-- Are visualizations necessary and useful for supporting conclusions/explaining findings?
+### 5. Conclusion and Summary of Results:
+- **High Accuracy**: The model achieved 92% accuracy on unseen data, demonstrating its robustness and predictive power - exceeding our target in problem statement of over 90%.
+- **Extreme Coefficient Technical Terms:**
+    - Many of the terms with highest or lowest coefficients (representing the log odds of a post being in r/stoicism if that word is present in the submission) were terms like 'buddhism', 'buddhist', 'stoic', 'stoicism' and philosophers names 'marcus' 'aurelius' or technical vocab 'karma', 'dharma'.
+    - For example, A post containing the word 'epicutus' increased log odds of the post being from r/stoicism by 4.1. 
+    - A post containing the word 'karma' decreased log odds of the post being from r/stoicism by 3.4. 
+- **Technical Jargon Defined**: The model's performance was significantly influenced by technical jargon. This jargon includes names of philosophers, philosophical writings, and words in Greek, Latin, Pali, or Sanskrit.
+- **Decrease in Accuracy When restricted**: When technical jargon was removed, both test accuracy and balanced accuracy dropped by 11%.
+- **Increase in Errors**: The removal of technical jargon resulted in a 126% increase in both false negatives and false positives, indicating the model's reliance on this jargon for classification.
+- **Above Baseline Performance**: Even with reduced accuracy (81%), the model performed 30% above the baseline, effectively classifying submissions. Which suggests despite having very similar foundational ideas, being translated to english and being re-intrepretted over centuries, the philosophies appear to have remarkably distinct vocabularies:
+    1. **Stoicism vs Buddhism**: 
+        - Stoicism subreddit often involves terms like 'virtues' and 'virtuous', whereas Buddhism focuses on 'enlightenment'. A submission containing the word 'virtue' increases log odds of a post being from r/stoicism by 1.7, whereas a submission containing the word 'enlightenment' decreases log odds of a post being from r/stoicism by 2.1.
+        - Stoics frequently mention 'care', while Buddhists emphasize 'compassion' - these were distribguidhing coefficients. 
+    2. **Vocabulary Differences in bottom/top 50 coefficients**:
+        - Stoicism subreddit had more verbs such as: 'control', 'live', 'react', 'work', 'gonna', 'respond', 'act', 'deal', 'think', 'going', 'handle', 'stop', 'advice'.
+        - Buddhism subreddit verbs were: 'thank', 'practice', 'suffering', 'teaching', 'painting', 'killing'.
+    3. **Emotional and Mental Statesin bottom/top 50 coefficients**:
+        - Buddhism subreddit terms related to mental states and emotions appear more prevalent: 'suffering', 'peace', 'compassion', 'emptiness', 'mindful', 'enlightenment', 'enlightened', 'beautiful'.
+        - Stoicism subreddit: 'emotions', 'emotionally', 'emotion', 'react', 'strength'.
 
 
----
+### Data Dictionary
 
-### Why did we choose this project for you?
-This project covers three of the biggest concepts we cover in the class: Classification Modeling, Natural Language Processing and Data Wrangling/Acquisition.
+| Column Name | Data Type | File | Description |
+|---|---|---|---|
+| title | object| stoicism_buddhism_clean.csv | The title of the submission. |
+| selftext| object | stoicism_buddhism_clean.csv | The submissions’ selftext - an empty string if a link post|
+| subreddit| object| stoicism_buddhism_clean.csv | Provides an instance of Subreddit |
+| created_utc | object| stoicism_buddhism_clean.csv| Time the submission was created, represented in Unix Time.|
+| name        | object| stoicism_buddhism_clean.csv| Fullname of the submission - a unique ID name used in Reddit backend |
+| upvote ratio| float | stoicism_buddhism_clean.csv |The percentage of upvotes from all votes on the submission, as float from 0-1|
+| num_upvotes	| int| stoicism_buddhism_clean.csv |Absolute number of upvotes receieved on reddit submission|
+| combined_text	| object| stoicism_buddhism_clean.csv |Text from title and selftext combined - feature variable|
+| is_stoicism	| boolean | stoicism_buddhism_clean.csv | Binary column, 1 if post is from stoicism subreddit, 0 if buddhism - target variable|
+| 	contains_https		| boolean | stoicism_buddhism_clean.csv | Binary 1 if post contains URL, 0 if not|
+| 	contains_emoji | boolean | stoicism_buddhism_clean.csv | Binary 1 if post contains emoji, 0 if not|
 
-Part 1 of the project focuses on **Data wrangling/gathering/acquisition**. This is a very important skill as not all the data you will need will be in clean CSVs or a single table in SQL.  There is a good chance that wherever you land you will have to gather some data from some unstructured/semi-structured sources; when possible, requesting information from an API, but sometimes scraping it because they don't have an API (or it's terribly documented).
 
-Part 2 of the project focuses on **Natural Language Processing** and converting standard text data (like Titles and Comments) into a format that allows us to analyze it and use it in modeling.
 
-Part 3 of the project focuses on **Classification Modeling**.  Given that project 2 was a regression focused problem, we needed to give you a classification focused problem to practice the various models, means of assessment and preprocessing associated with classification.   
+### References
+
+##### Philosophical Comparisons
+- [Stoicism and Buddhism: A Comparison](https://philosophyasawayoflife.medium.com/stoicism-and-buddhism-a-comparison-58d3e86587b)
+- [The Stoic Sage - Stoicism and Buddhism](https://thestoicsage.com/stoicism-and-buddhism/)
+- [Classical Wisdom - Stoicism and Buddhism: Two Sides of the Same Coin](https://classicalwisdom.com/philosophy/stoicism-and-buddhism/)
+- [Psychology Today - The Happy Overlap Between Stoicism and Buddhism](https://www.psychologytoday.com/intl/blog/buddhist-psychology-east-meets-west/202207/the-happy-overlap-between-stoicism-and-buddhism)
+- [Quora Discussion: Why isn't Stoicism considered a religion?](https://www.quora.com/Why-isnt-Stoicism-considered-a-religion-since-Epictetus-mentions-God-so-much-in-his-Discourses)
+- [Daily Stoic - Stoicism and Buddhism: How Similar Are They?](https://dailystoic.com/stoicism-buddhism/)
+- [Rationally Speaking - Buddhism, Epicureanism, and Stoicism](https://rationallyspeaking.blogspot.com/2013/02/buddhism-epicureanism-and-stoicism.html)
+
+##### Technical and Programming References
+- [FreeCodeCamp - Regular Expression for a URL](https://www.freecodecamp.org/news/how-to-write-a-regular-expression-for-a-url/)
+- [Stack Overflow - Adding Stemming Support to CountVectorizer (scikit-learn)](https://stackoverflow.com/questions/36182502/add-stemming-support-to-countvectorizer-sklearn)
+- [Stack Overflow - Best Regular Expression for Valid URL](https://stackoverflow.com/questions/161738/what-is-the-best-regular-expression-to-check-if-a-string-is-a-valid-url?page=2&tab=votes)
+- [GitHub Gist - Regular Expression for Fast Punctuation Removal](https://gist.github.com/slowkow/7a7f61f495e3dbb7e3d767f97bd7304b)
+- [IncludeHelp - Fast Punctuation Removal with Pandas](https://www.includehelp.com/python/fast-punctuation-removal-with-pandas.aspx)
+- [Stack Overflow - Adding Words to NLTK Stoplist](https://stackoverflow.com/questions/5511708/adding-words-to-nltk-stoplist)
+- [Towards Data Science - Visualizing a Decision Tree from a Random Forest in Python Using Scikit-Learn](https://towardsdatascience.com/how-to-visualize-a-decision-tree-from-a-random-forest-in-python-using-scikit-learn-38ad2d75f21c)
+- [Towards Data Science - Decision Trees Explained: Entropy, Information Gain, Gini Index, CCP Pruning](https://towardsdatascience.com/decision-trees-explained-entropy-information-gain-gini-index-ccp-pruning-4d78070db36c)
+
